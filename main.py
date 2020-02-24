@@ -5,7 +5,7 @@ from classes.inventory import Item
 # create black magic
 fire = Spell("Fire", 10, 100, "Black")
 thunder = Spell("Thunder", 10, 100, "Black")
-meteor = Spell("Meteor", 20, 200, "black")
+meteor = Spell("Meteor", 20, 200, "Black")
 blizzard = Spell("Blizzard", 10, 100, "Black")
 quake = Spell("Quake", 14, 140, "Black")
 
@@ -22,9 +22,12 @@ hielixer = Item("Mega-Elixer", "elixer", "Fully restores party's HP/MP", 99999)
 
 grenade = Item("Grenade", "attack", "Deals 500 Hp Damage to oponent", 500)
 
-# instantiate people
 player_spells = [fire, thunder, blizzard, meteor, quake, cure, cura]
-player_items = [potion, hipotion, superpotion, elixer, hielixer, grenade]
+player_items = [{"item": potion, "quantity": 15}, {"item": hipotion, "quantity": 5},
+                {"item": superpotion, "quantity": 5}, {"item": elixer, "quantity": 5},
+                {"item": hielixer, "quantity": 5}, {"item": grenade, "quantity": 5}]
+
+# instantiate people
 player = Person(460, 65, 60, 34, player_spells, player_items)
 enemy = Person(1200, 65, 45, 25, [], [])
 
@@ -52,10 +55,9 @@ while running:
         spell = player.magic[choice_m]
 
         magic_dmg = spell.generate_damage()
-        print(magic_dmg)
 
         current_mp = player.get_mp()
-         print (current_mp)
+
         if spell.cost > current_mp:
             print(bcolors.Fail + "\nYou don't have enough magic points to use this magic!!" + bcolors.ENDC)
             continue
@@ -64,8 +66,7 @@ while running:
         if spell.type == "white":
             player.heal(magic_dmg)
             print(bcolors.OKBLUE + "Your Hp increased to: " + str(player.get_hp), "points")
-        elif spell.type == "black":
-            print(magic_dmg," 2")
+        elif spell.type == "Black":
             enemy.take_damage(magic_dmg)
             print(bcolors.OKBLUE + "\n" + spell.name + "deals", str(magic_dmg), "points of damage" + bcolors.ENDC)
 
@@ -75,7 +76,13 @@ while running:
         if choice_i == -1:
             continue
 
-        item = player.items[choice_i]
+        item = player.items[choice_i]["item"]
+        player.items[choice_i]["quantity"] -= 1
+        if player.items[choice_i]["quantity"] <= 0:
+            player.items[choice_i]["quantity"] = 0
+
+            print (bcolors.FAIL + "\nNone left..." + bcolors.ENDC)
+            continue
 
         if item.type == "potion":
             player.heal(item.prop)
